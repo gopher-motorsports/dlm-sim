@@ -13,18 +13,22 @@
 #include "dlm-generate-data.h"
 #include "dlm.h"
 
-void generate_node(DATA_NODE* bufferHead) {
+void generate_node(DATA_INFO_NODE* bufferHead) {
     static uint32_t nodeCount = 0;
 
     // create a data node
-    DATA_NODE* node = malloc(sizeof(DATA_NODE));
+    DATA_INFO_NODE* node;
+    U8_DATA_NODE* u8_node = malloc(sizeof(U8_DATA_NODE));
 
-    if (node == NULL) return;
+    if (u8_node == NULL) return;
 
     // fill data
+    u8_node->data = 0x7d;
+
+    // fill metadata
+    node = (DATA_INFO_NODE*)u8_node;
     node->timestamp = nodeCount;
-    node->id = 0x007e;
-    node->data = 0x7d;
+	node->id = 0x007e;
 
     // wait for access to the data buffer
     osStatus_t status = osMutexAcquire(bufferMutexHandle, osWaitForever);

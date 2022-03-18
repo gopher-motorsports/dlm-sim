@@ -10,6 +10,6 @@
 
 #include "dlm.h"
 
-void transmit_nodes(DATA_NODE* bufferHead);
+void transmit_nodes(DATA_INFO_NODE* bufferHead);
 
 #endif /* INC_DLM_TRANSMIT_DATA_H_ */
