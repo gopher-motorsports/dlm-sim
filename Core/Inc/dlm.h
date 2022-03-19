@@ -16,11 +16,6 @@ void dlm_generate_data(void);
 void dlm_transmit_data(void);
 void dlm_save_data(void);
 
-typedef union {
-	double d;
-	uint64_t u64;
-} DPF_CONVERTER;
-
 // general node to refer to varying data sizes
 typedef struct DATA_INFO_NODE {
     uint32_t timestamp;

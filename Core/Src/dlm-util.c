@@ -9,13 +9,14 @@
 
 #include "dlm-util.h"
 #include "dlm.h"
-#include "GopherCAN.h"
 
 // dlm-util.c contains functions that may be used across dlm features
 
 // takes a data node, breaks it into bytes, and writes it to a packet (byte array)
 // returns the length of the packet
-uint8_t packetize_node(DATA_INFO_NODE* node, uint8_t packet[]) {
+uint8_t packetize_node(DATA_INFO_NODE* infoNode, uint8_t packet[]) {
+	U8_DATA_NODE* node = (U8_DATA_NODE*)infoNode;
+
     uint8_t i;
     uint8_t* bytes;
     uint8_t packetLength = 0;
@@ -33,11 +34,8 @@ uint8_t packetize_node(DATA_INFO_NODE* node, uint8_t packet[]) {
         packetLength = append_byte(packet, packetLength, bytes[i - 1]);
     }
 
-    DPF_CONVERTER data;
-//    data.d = convert_data_to_dpf(node);
-    data.d = (double)(((U8_DATA_NODE*)node)->data);
-    for (i = sizeof(data.u64); i > 0; i--) {
-        bytes = (uint8_t*) &(data.u64);
+    for (i = sizeof(node->data); i > 0; i--) {
+        bytes = (uint8_t*) &(node->data);
         packetLength = append_byte(packet, packetLength, bytes[i - 1]);
     }
 
@@ -64,40 +62,4 @@ uint8_t append_byte(uint8_t packet[], uint8_t packetLength, uint8_t byte) {
     }
 
     return packetLength + bytesFilled;
-}
-
-// convert any data size into a double precision float
-double convert_data_to_dpf(DATA_INFO_NODE* node) {
-    switch (parameter_data_types[node->id]) {
-		case UNSIGNED8:
-			return (double)(((U8_DATA_NODE*)node)->data);
-
-		case UNSIGNED16:
-			return (double)(((U16_DATA_NODE*)node)->data);
-
-		case UNSIGNED32:
-			return (double)(((U32_DATA_NODE*)node)->data);
-
-		case UNSIGNED64:
-			return (double)(((U64_DATA_NODE*)node)->data);
-
-		case SIGNED8:
-			return (double)(((S8_DATA_NODE*)node)->data);
-
-		case SIGNED16:
-			return (double)(((S16_DATA_NODE*)node)->data);
-
-		case SIGNED32:
-			return (double)(((S32_DATA_NODE*)node)->data);
-
-		case SIGNED64:
-			return (double)(((S64_DATA_NODE*)node)->data);
-
-		case FLOATING:
-			return (double)(((FLOAT_DATA_NODE*)node)->data);
-
-		default:
-			// something went wrong, just write 0 to data
-			return 0;
-	}
 }

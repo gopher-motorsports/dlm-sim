@@ -17,18 +17,15 @@ void generate_node(DATA_INFO_NODE* bufferHead) {
     static uint32_t nodeCount = 0;
 
     // create a data node
-    DATA_INFO_NODE* node;
-    U8_DATA_NODE* u8_node = malloc(sizeof(U8_DATA_NODE));
+    U8_DATA_NODE* node = malloc(sizeof(U8_DATA_NODE));
 
-    if (u8_node == NULL) return;
+    if (node == NULL) return;
 
-    // fill data
-    u8_node->data = 0x7d;
-
-    // fill metadata
-    node = (DATA_INFO_NODE*)u8_node;
     node->timestamp = nodeCount;
 	node->id = 0x007e;
+    node->data = 0x7d;
+
+	DATA_INFO_NODE* infoNode = (DATA_INFO_NODE*)node;
 
     // wait for access to the data buffer
     osStatus_t status = osMutexAcquire(bufferMutexHandle, osWaitForever);
@@ -36,8 +33,8 @@ void generate_node(DATA_INFO_NODE* bufferHead) {
         // mutex acquired, push a node to the buffer
         osKernelLock();
 
-        node->next = bufferHead->next;
-        bufferHead->next = node;
+        infoNode->next = bufferHead->next;
+        bufferHead->next = infoNode;
 
         osKernelUnlock();
         osMutexRelease(bufferMutexHandle);
@@ -45,6 +42,6 @@ void generate_node(DATA_INFO_NODE* bufferHead) {
         nodeCount++;
     } else {
         // couldn't get access to the buffer, throw away this node
-        free(node);
+        free(infoNode);
     }
 }
