@@ -10,6 +10,6 @@
 
 #include "dlm.h"
 
-void generate_node(DATA_INFO_NODE* bufHead);
+void generate_node(DATA_NODE* bufferHead);
 
 #endif /* INC_DLM_GENERATE_DATA_H_ */

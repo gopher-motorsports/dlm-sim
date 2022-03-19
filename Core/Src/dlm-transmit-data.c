@@ -13,11 +13,11 @@
 #include "dlm.h"
 #include "dlm-util.h"
 
-void transmit_nodes(DATA_INFO_NODE* bufferHead) {
-    static uint8_t packet[32];
-    static DATA_INFO_NODE* prevTransmission = NULL;
-    DATA_INFO_NODE* node = bufferHead->next;
-    DATA_INFO_NODE* transmissionHead = node;
+void transmit_nodes(DATA_NODE* bufferHead) {
+    static DATA_NODE* prevTransmission = NULL;
+    uint8_t packet[32];
+    DATA_NODE* node = bufferHead->next;
+    DATA_NODE* transmissionHead = node;
 
     // step through nodes from the buffer head to the start of the last transmission
     while (node != NULL && node != prevTransmission) {

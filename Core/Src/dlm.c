@@ -18,7 +18,7 @@
 
 // data nodes are held in a linked list buffer
 // most recent node is closest to head
-DATA_INFO_NODE bufferHead = {0, 0, NULL};
+DATA_NODE bufferHead = {0, 0, NULL, NULL};
 
 // for simulation purposes, generate random data nodes and append them to the buffer
 void dlm_generate_data(void) {

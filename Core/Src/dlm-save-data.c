@@ -11,8 +11,8 @@
 #include "dlm-save-data.h"
 #include "dlm.h"
 
-void save_nodes(DATA_INFO_NODE* bufferHead) {
-    DATA_INFO_NODE* node = bufferHead->next;
+void save_nodes(DATA_NODE* bufferHead) {
+    DATA_NODE* node = bufferHead->next;
 
     // clear all nodes from the buffer
     while (node != NULL) {
@@ -21,7 +21,9 @@ void save_nodes(DATA_INFO_NODE* bufferHead) {
         if (status == osOK) {
             osKernelLock();
 
-            // remove node
+            // free data space
+            free(node->data);
+            // free & remove node
             bufferHead->next = node->next;
             free(node);
             node = bufferHead->next;

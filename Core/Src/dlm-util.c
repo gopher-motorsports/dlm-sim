@@ -14,14 +14,12 @@
 
 // takes a data node, breaks it into bytes, and writes it to a packet (byte array)
 // returns the length of the packet
-uint8_t packetize_node(DATA_INFO_NODE* infoNode, uint8_t packet[]) {
-	U8_DATA_NODE* node = (U8_DATA_NODE*)infoNode;
-
+uint8_t packetize_node(DATA_NODE* node, uint8_t packet[]) {
     uint8_t i;
     uint8_t* bytes;
     uint8_t packetLength = 0;
 
-    packet[packetLength] = (uint8_t)START_BYTE;
+    packet[packetLength] = (uint8_t) START_BYTE;
     packetLength++;
 
     for (i = sizeof(node->timestamp); i > 0; i--) {
@@ -34,8 +32,8 @@ uint8_t packetize_node(DATA_INFO_NODE* infoNode, uint8_t packet[]) {
         packetLength = append_byte(packet, packetLength, bytes[i - 1]);
     }
 
-    for (i = sizeof(node->data); i > 0; i--) {
-        bytes = (uint8_t*) &(node->data);
+    for (i = sizeof(uint8_t); i > 0; i--) {
+        bytes = (uint8_t*) (node->data);
         packetLength = append_byte(packet, packetLength, bytes[i - 1]);
     }
 

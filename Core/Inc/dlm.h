@@ -16,75 +16,11 @@ void dlm_generate_data(void);
 void dlm_transmit_data(void);
 void dlm_save_data(void);
 
-// general node to refer to varying data sizes
-typedef struct DATA_INFO_NODE {
-    uint32_t timestamp;
-    uint16_t id;
-    struct DATA_INFO_NODE* next;
-} DATA_INFO_NODE;
-
-// nodes for each data size
-typedef struct {
-    uint32_t timestamp;
-    uint16_t id;
-    DATA_INFO_NODE* next;
-    uint8_t data;
-} U8_DATA_NODE;
-
-typedef struct {
-    uint32_t timestamp;
-    uint16_t id;
-    DATA_INFO_NODE* next;
-    uint16_t data;
-} U16_DATA_NODE;
-
-typedef struct {
-    uint32_t timestamp;
-    uint16_t id;
-    DATA_INFO_NODE* next;
-    uint32_t data;
-} U32_DATA_NODE;
-
-typedef struct {
-    uint32_t timestamp;
-    uint16_t id;
-    DATA_INFO_NODE* next;
-    uint64_t data;
-} U64_DATA_NODE;
-
-typedef struct {
-    uint32_t timestamp;
-    uint16_t id;
-    DATA_INFO_NODE* next;
-    int8_t data;
-} S8_DATA_NODE;
-
-typedef struct {
-    uint32_t timestamp;
-    uint16_t id;
-    DATA_INFO_NODE* next;
-    int16_t data;
-} S16_DATA_NODE;
-
-typedef struct {
-    uint32_t timestamp;
-    uint16_t id;
-    DATA_INFO_NODE* next;
-    int32_t data;
-} S32_DATA_NODE;
-
-typedef struct {
-    uint32_t timestamp;
-    uint16_t id;
-    DATA_INFO_NODE* next;
-    int64_t data;
-} S64_DATA_NODE;
-
-typedef struct {
-    uint32_t timestamp;
-    uint16_t id;
-    DATA_INFO_NODE* next;
-    float data;
-} FLOAT_DATA_NODE;
+typedef struct DATA_NODE {
+	uint32_t timestamp;
+	uint16_t id;
+	void* data;
+	struct DATA_NODE* next;
+} DATA_NODE;
 
 #endif /* INC_DLM_H_ */
