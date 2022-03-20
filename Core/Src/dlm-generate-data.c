@@ -12,6 +12,7 @@
 
 #include "dlm-generate-data.h"
 #include "dlm.h"
+#include "dlm-util.h"
 
 void generate_node(DATA_NODE* bufferHead) {
     static uint32_t nodeCount = 0;
@@ -19,12 +20,22 @@ void generate_node(DATA_NODE* bufferHead) {
     // create a data node
     DATA_NODE* node = malloc(sizeof(DATA_NODE)); // allocate space for the node structure
     if (node == NULL) return;
+
     node->timestamp = nodeCount;
 	node->id = 0x0001;
+	node->type = UNSIGNED64;
 
-    node->data = malloc(sizeof(uint8_t)); // allocate space for the node's data
-    if (node->data == NULL) return;
-    *(uint8_t*)(node->data) = 0x69;
+	node->data = malloc(get_node_data_size(node->type)); // allocate space for the node's data
+	if (node->data == NULL) return;
+
+    uint64_t fakeData = 0x69;
+    uint8_t success = set_node_data(node, &fakeData);
+    if (!success) {
+    	// something went wrong with this node
+    	free(node->data);
+		free(node);
+		return;
+    }
 
     // wait for access to the data buffer
     osStatus_t status = osMutexAcquire(bufferMutexHandle, osWaitForever);
@@ -43,5 +54,6 @@ void generate_node(DATA_NODE* bufferHead) {
         // couldn't get access to the buffer, throw away this node
         free(node->data);
         free(node);
+        return;
     }
 }
