@@ -9,11 +9,8 @@
 #define INC_DLM_UTIL_H_
 
 #include <stdint.h>
-#include "dlm.h"
 
-uint8_t get_node_data_size(enum DATA_TYPE type);
-uint8_t set_node_data(DATA_NODE* node, void* data);
-uint8_t packetize_node(DATA_NODE* node, uint8_t packet[]);
-uint8_t append_byte(uint8_t packet[], uint8_t packetLength, uint8_t byte);
+uint8_t append_byte(uint8_t buffer[], uint8_t sz, uint8_t byte);
+uint8_t append_packet(uint8_t buffer[], uint8_t sz, uint32_t timestamp, uint16_t id, void* data, uint8_t dataSize);
 
 #endif /* INC_DLM_UTIL_H_ */

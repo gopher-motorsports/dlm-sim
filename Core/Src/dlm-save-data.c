@@ -5,31 +5,12 @@
  *      Author: jonathan
  */
 
-#include <stdlib.h>
-#include "main.h"
-
 #include "dlm-save-data.h"
-#include "dlm.h"
+#include "cmsis_os2.h"
 
-void save_nodes(DATA_NODE* bufferHead) {
-    DATA_NODE* node = bufferHead->next;
-
-    // clear all nodes from the buffer
-    while (node != NULL) {
-        // wait for access to the data buffer
-        osStatus_t status = osMutexAcquire(bufferMutexHandle, osWaitForever);
-        if (status == osOK) {
-            osKernelLock();
-
-            // free data space
-            free(node->data);
-            // free & remove node
-            bufferHead->next = node->next;
-            free(node);
-            node = bufferHead->next;
-
-            osKernelUnlock();
-            osMutexRelease(bufferMutexHandle);
-        }
+void store_data(PPBuff* buffer) {
+    if (buffer->full) {
+    	osDelay(5000); // dump buffer somewhere...
+    	buffer->flushed = 1;
     }
 }

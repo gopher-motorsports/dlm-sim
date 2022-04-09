@@ -5,26 +5,31 @@
  *      Author: jonathan
  */
 
+#include "dlm.h"
 #include "main.h"
 #include "cmsis_os2.h"
-
-#include "dlm.h"
 #include "dlm-generate-data.h"
-#include "dlm-transmit-data.h"
 #include "dlm-save-data.h"
+#include "dlm-transmit-data.h"
 
 // dlm.c contains the high level duties of the data logging module
 // the functions here are called by RTOS task handlers and their implementation is abstracted to similarly-named files
 
-// data nodes are held in a linked list buffer
-// most recent node is closest to head
-DATA_NODE bufferHead = {0, 0, UNKNOWN, NULL, NULL};
+uint8_t row1[BUFFER_SIZE];
+uint8_t row2[BUFFER_SIZE];
+PPBuff buffer = {
+		.rows = {row1, row2},
+		.write = 0,
+		.written = 0,
+		.full = 0,
+		.flushed = 1,
+};
 
 // for simulation purposes, generate random data nodes and append them to the buffer
 void dlm_generate_data(void) {
     HAL_GPIO_TogglePin(BLED_GPIO_Port, BLED_Pin);
 
-    generate_node(&bufferHead);
+    generate_packet(&buffer);
 
     // this task should run every 100ms
     osDelay(100);
@@ -34,7 +39,7 @@ void dlm_generate_data(void) {
 void dlm_transmit_data(void) {
     HAL_GPIO_TogglePin(GLED_GPIO_Port, GLED_Pin);
 
-    transmit_nodes(&bufferHead);
+    transmit_packets(&buffer);
 
     // this task should run every 500ms
     osDelay(500);
@@ -45,7 +50,7 @@ void dlm_transmit_data(void) {
 void dlm_save_data(void) {
     HAL_GPIO_TogglePin(RLED_GPIO_Port, RLED_Pin);
 
-    save_nodes(&bufferHead);
+    store_data(&buffer);
 
     // this task should run every 2s
     osDelay(2000);

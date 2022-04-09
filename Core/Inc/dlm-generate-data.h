@@ -10,6 +10,6 @@
 
 #include "dlm.h"
 
-void generate_node(DATA_NODE* bufferHead);
+void generate_packet(PPBuff* buffer);
 
 #endif /* INC_DLM_GENERATE_DATA_H_ */

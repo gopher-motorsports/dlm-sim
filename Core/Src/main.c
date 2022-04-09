@@ -66,11 +66,6 @@ const osThreadAttr_t SaveData_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for bufferMutex */
-osMutexId_t bufferMutexHandle;
-const osMutexAttr_t bufferMutex_attributes = {
-  .name = "bufferMutex"
-};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -129,9 +124,6 @@ int main(void)
 
   /* Init scheduler */
   osKernelInitialize();
-  /* Create the mutex(es) */
-  /* creation of bufferMutex */
-  bufferMutexHandle = osMutexNew(&bufferMutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */

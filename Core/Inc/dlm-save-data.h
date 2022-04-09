@@ -10,6 +10,6 @@
 
 #include "dlm.h"
 
-void save_nodes(DATA_NODE* bufferHead);
+void store_data(PPBuff* buffer);
 
 #endif /* INC_DLM_SAVE_DATA_H_ */
