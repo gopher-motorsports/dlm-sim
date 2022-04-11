@@ -15,13 +15,15 @@
 // dlm.c contains the high level duties of the data logging module
 // the functions here are called by RTOS task handlers and their implementation is abstracted to similarly-named files
 
-uint8_t row1[BUFFER_SIZE];
-uint8_t row2[BUFFER_SIZE];
+// buffers have padding beyond the "max size" to prevent packets being cut off
+uint8_t row1[BUFFER_SIZE + MAX_PACKET_SIZE];
+uint8_t row2[BUFFER_SIZE + MAX_PACKET_SIZE];
 PPBuff buffer = {
 		.rows = {row1, row2},
 		.write = 0,
 		.written = 0,
 		.full = 0,
+		.flushSize = 0,
 		.flushed = 1,
 };
 

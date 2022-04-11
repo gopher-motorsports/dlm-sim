@@ -15,10 +15,11 @@ void generate_packet(PPBuff* buffer) {
     	// write buffer is full
     	// check if we're ready to ping-pong
     	if (buffer->flushed) {
-    		buffer->write = !buffer->write;
+    		buffer->flushed = 0;
+    		buffer->flushSize = buffer->written;
     		buffer->written = 0;
     		buffer->full = 0;
-    		buffer->flushed = 0;
+    		buffer->write = !buffer->write;
     	} else return;
     }
 
@@ -29,7 +30,7 @@ void generate_packet(PPBuff* buffer) {
     buffer->written = append_packet(buffer->rows[buffer->write], buffer->written, timestamp, id, &data, sizeof(data));
     packetCount++;
 
-    if (buffer->written == BUFFER_SIZE) {
+    if (buffer->written >= BUFFER_SIZE) {
     	buffer->full = 1;
     }
 }

@@ -10,7 +10,10 @@
 
 void store_data(PPBuff* buffer) {
     if (buffer->full) {
-    	osDelay(5000); // dump buffer somewhere...
+    	// dump read buffer somewhere...
+    	// buffer->rows[!buffer->write] from 0 to buffer->flushSize
+    	osDelay(5000);
+
     	buffer->flushed = 1;
     }
 }
