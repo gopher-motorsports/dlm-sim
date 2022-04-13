@@ -10,20 +10,23 @@
 
 #include <stdint.h>
 
-#define START_BYTE 0x7e
-#define BUFFER_SIZE 16
-#define MAX_PACKET_SIZE 15
-
 void dlm_init(void);
 void dlm_generate_data(void);
 void dlm_transmit_data(void);
 void dlm_save_data(void);
 
+#define START_BYTE 0x7e
+
+#define BUFFER_SIZE 16
+#define MAX_PACKET_SIZE 15
+
 typedef struct PPBuff {
 	uint8_t* rows[2]; // pointers to 2 byte buffers
+
 	uint8_t write; // index of the write buffer (0 or 1)
-	uint8_t written; // # of bytes in write buffer
-	uint8_t full; // 1 if the write buffer is full
+	uint8_t writeSize; // # of bytes in write buffer
+	uint8_t writeFull; // 1 if the write buffer is full
+
 	uint8_t flushSize; // # of bytes ready to be flushed
 	uint8_t flushed; // 1 if the read buffer has been flushed
 } PPBuff;

@@ -22,8 +22,8 @@ uint8_t row2[BUFFER_SIZE + MAX_PACKET_SIZE];
 PPBuff buffer = {
 		.rows = {row1, row2},
 		.write = 0,
-		.written = 0,
-		.full = 0,
+		.writeSize = 0,
+		.writeFull = 0,
 		.flushSize = 0,
 		.flushed = 1,
 };

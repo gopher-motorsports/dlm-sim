@@ -9,7 +9,7 @@
 #include "cmsis_os2.h"
 
 void store_data(PPBuff* buffer) {
-    if (buffer->full) {
+    if (!buffer->flushed) {
     	// dump read buffer somewhere...
     	// buffer->rows[!buffer->write] from 0 to buffer->flushSize
     	osDelay(5000);
