@@ -5,6 +5,7 @@
  *      Author: jonathan
  */
 
+#include <stdlib.h>
 #include "dlm.h"
 #include "main.h"
 #include "cmsis_os2.h"
@@ -26,6 +27,10 @@ PPBuff buffer = {
 		.flushSize = 0,
 		.flushed = 1,
 };
+
+// any necessary initialization
+void dlm_init(void) {
+}
 
 // for simulation purposes, generate random data nodes and append them to the buffer
 void dlm_generate_data(void) {

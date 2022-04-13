@@ -14,9 +14,7 @@
 #define BUFFER_SIZE 16
 #define MAX_PACKET_SIZE 15
 
-// TODO: what if the write buffer fills before the other one has been flushed
-// wont have anywhere to put the incoming data
-
+void dlm_init(void);
 void dlm_generate_data(void);
 void dlm_transmit_data(void);
 void dlm_save_data(void);
