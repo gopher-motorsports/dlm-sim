@@ -14,9 +14,10 @@ void generate_packet(PPBuff* buffer) {
 
     if (buffer->writeFull) {
     	// check if we're ready to ping-pong
-    	if (buffer->flushed) {
+    	if (buffer->flushed && buffer->transmissionDone) {
     		osKernelLock();
     		buffer->flushed = 0;
+    		buffer->transmissionDone = 0;
     		buffer->flushSize = buffer->writeSize;
     		buffer->writeSize = 0;
     		buffer->writeFull = 0;

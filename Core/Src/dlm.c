@@ -26,6 +26,7 @@ PPBuff buffer = {
 		.writeFull = 0,
 		.flushSize = 0,
 		.flushed = 1,
+		.transmissionDone = 1
 };
 
 // any necessary initialization

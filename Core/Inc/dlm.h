@@ -29,6 +29,8 @@ typedef struct PPBuff {
 
 	uint8_t flushSize; // # of bytes ready to be flushed
 	uint8_t flushed; // 1 if the read buffer has been flushed
+
+	uint8_t transmissionDone; // 1 when the buffer has been sent to radio module
 } PPBuff;
 
 #endif /* INC_DLM_H_ */
