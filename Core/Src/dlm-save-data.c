@@ -7,13 +7,17 @@
 
 #include "dlm-save-data.h"
 #include "cmsis_os2.h"
+#include "main.h"
 
 void store_data(PPBuff* buffer) {
-    if (!buffer->flushed) {
-    	// dump read buffer somewhere...
-    	// buffer->rows[!buffer->write] from 0 to buffer->flushSize
-    	osDelay(100);
+	// dump read buffer somewhere...
+	// buffer->buffs[!buffer->write] from 0 to buffer->flushSize
+	osDelay(10);
 
-    	buffer->flushed = 1;
-    }
+	// swap buffers
+	osMutexAcquire(bufferMutexHandle, osWaitForever);
+	buffer->flushSize = buffer->writeSize;
+	buffer->writeSize = 0;
+	buffer->write = !buffer->write;
+	osMutexRelease(bufferMutexHandle);
 }

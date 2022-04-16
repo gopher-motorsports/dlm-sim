@@ -10,9 +10,8 @@
 #include "main.h"
 
 void transmit_packets(PPBuff* buffer) {
-	if (!buffer->transmissionDone) {
-		HAL_UART_Transmit(&huart2, buffer->rows[!buffer->write], buffer->flushSize, HAL_MAX_DELAY);
-
-		buffer->transmissionDone = 1;
-	}
+	// be smart about searching for whitelisted packets
+	// look for a start byte -> id is 4 bytes ahead
+	// id tells how many bytes long the packet is -> leads to next id
+	// wont have to search every byte
 }
