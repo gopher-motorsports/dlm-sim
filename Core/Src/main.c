@@ -44,31 +44,26 @@
 
 UART_HandleTypeDef huart2;
 
-/* Definitions for GenerateData */
-osThreadId_t GenerateDataHandle;
-const osThreadAttr_t GenerateData_attributes = {
-  .name = "GenerateData",
+/* Definitions for AcquireData */
+osThreadId_t AcquireDataHandle;
+const osThreadAttr_t AcquireData_attributes = {
+  .name = "AcquireData",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for TransmitData */
-osThreadId_t TransmitDataHandle;
-const osThreadAttr_t TransmitData_attributes = {
-  .name = "TransmitData",
+/* Definitions for StoreData */
+osThreadId_t StoreDataHandle;
+const osThreadAttr_t StoreData_attributes = {
+  .name = "StoreData",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityAboveNormal,
 };
-/* Definitions for SaveData */
-osThreadId_t SaveDataHandle;
-const osThreadAttr_t SaveData_attributes = {
-  .name = "SaveData",
+/* Definitions for BroadcastData */
+osThreadId_t BroadcastDataHandle;
+const osThreadAttr_t BroadcastData_attributes = {
+  .name = "BroadcastData",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-/* Definitions for bufferMutex */
-osMutexId_t bufferMutexHandle;
-const osMutexAttr_t bufferMutex_attributes = {
-  .name = "bufferMutex"
+  .priority = (osPriority_t) osPriorityAboveNormal,
 };
 /* USER CODE BEGIN PV */
 
@@ -78,9 +73,9 @@ const osMutexAttr_t bufferMutex_attributes = {
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
-void generate_data(void *argument);
-void transmit_data(void *argument);
-void save_data(void *argument);
+void Thread_AcquireData(void *argument);
+void Thread_StoreData(void *argument);
+void Thread_BroadcastData(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -126,9 +121,6 @@ int main(void)
 
   /* Init scheduler */
   osKernelInitialize();
-  /* Create the mutex(es) */
-  /* creation of bufferMutex */
-  bufferMutexHandle = osMutexNew(&bufferMutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -147,14 +139,14 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of GenerateData */
-  GenerateDataHandle = osThreadNew(generate_data, NULL, &GenerateData_attributes);
+  /* creation of AcquireData */
+  AcquireDataHandle = osThreadNew(Thread_AcquireData, NULL, &AcquireData_attributes);
 
-  /* creation of TransmitData */
-  TransmitDataHandle = osThreadNew(transmit_data, NULL, &TransmitData_attributes);
+  /* creation of StoreData */
+  StoreDataHandle = osThreadNew(Thread_StoreData, NULL, &StoreData_attributes);
 
-  /* creation of SaveData */
-  SaveDataHandle = osThreadNew(save_data, NULL, &SaveData_attributes);
+  /* creation of BroadcastData */
+  BroadcastDataHandle = osThreadNew(Thread_BroadcastData, NULL, &BroadcastData_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -347,58 +339,58 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_generate_data */
+/* USER CODE BEGIN Header_Thread_AcquireData */
 /**
-  * @brief  Function implementing the GenerateData thread.
+  * @brief  Function implementing the AcquireData thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_generate_data */
-void generate_data(void *argument)
+/* USER CODE END Header_Thread_AcquireData */
+void Thread_AcquireData(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
-    dlm_generate_data();
+	  dlm_manage_data_acquisition();
   }
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_transmit_data */
+/* USER CODE BEGIN Header_Thread_StoreData */
 /**
-* @brief Function implementing the TransmitData thread.
+* @brief Function implementing the StoreData thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_transmit_data */
-void transmit_data(void *argument)
+/* USER CODE END Header_Thread_StoreData */
+void Thread_StoreData(void *argument)
 {
-  /* USER CODE BEGIN transmit_data */
+  /* USER CODE BEGIN Thread_StoreData */
   /* Infinite loop */
   for(;;)
   {
-    dlm_transmit_data();
+	  dlm_manage_data_storage();
   }
-  /* USER CODE END transmit_data */
+  /* USER CODE END Thread_StoreData */
 }
 
-/* USER CODE BEGIN Header_save_data */
+/* USER CODE BEGIN Header_Thread_BroadcastData */
 /**
-* @brief Function implementing the SaveData thread.
+* @brief Function implementing the BroadcastData thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_save_data */
-void save_data(void *argument)
+/* USER CODE END Header_Thread_BroadcastData */
+void Thread_BroadcastData(void *argument)
 {
-  /* USER CODE BEGIN save_data */
+  /* USER CODE BEGIN Thread_BroadcastData */
   /* Infinite loop */
   for(;;)
   {
-    dlm_save_data();
+	  dlm_manage_data_broadcast();
   }
-  /* USER CODE END save_data */
+  /* USER CODE END Thread_BroadcastData */
 }
 
  /**
