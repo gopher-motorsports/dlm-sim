@@ -43,6 +43,9 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 extern UART_HandleTypeDef huart2;
+extern osThreadId_t AcquireDataHandle;
+extern osThreadId_t StoreDataHandle;
+extern osThreadId_t BroadcastDataHandle;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

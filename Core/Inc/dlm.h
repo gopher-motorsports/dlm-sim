@@ -16,14 +16,24 @@
 #define ESCAPE_BYTE 0x7d
 
 // size in bytes for half of the ping-pong buffer
-#define STORAGE_BUFFER_SIZE 16
-#define TELEMETRY_BUFFER_SIZE 16
+#define STORAGE_BUFFER_SIZE 128
+#define TELEMETRY_BUFFER_SIZE 128
 
-// ping-pong buffer to enable efficient reading/writing of data
+// minimum time between transfers in ms
+#define STORAGE_TRANSFER_DELAY 1000
+#define TELEMETRY_TRANSFER_DELAY 1000
+
+// time between packet generation in ms
+#define DATAGEN_DELAY 100
+
+// thread flag to indicate that a previous transfer is complete
+#define FLAG_TRANSFER_DONE 0x00000001U
+
+// ping-pong buffer to enable higher data throughput
 typedef struct PPBuff {
 	uint8_t* buffs[2]; // pointers to 2 byte buffers
 	uint8_t write; // index of the write buffer (0 or 1)
-	uint8_t writeSize; // # of bytes written
+	uint32_t writeSize; // # of bytes written
 } PPBuff;
 
 // any necessary global initialization
@@ -37,7 +47,7 @@ void dlm_manage_data_acquisition(void);
 // responsible for setting up SD card transfers and swapping its ping-pong buffer
 void dlm_manage_data_storage(void);
 
-// high level function for the data broadcast task
+// high level function for the data broadcast task (telemetry)
 // responsible for setting up UART transfers to an Xbee module and swapping its ping-pong buffer
 void dlm_manage_data_broadcast(void);
 

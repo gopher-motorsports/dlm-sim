@@ -29,6 +29,6 @@ uint32_t append_byte(uint8_t buffer[], uint32_t size, uint8_t byte);
 // dataSize: size of the data in bytes
 // RETURNS:
 // the new buffer size
-uint32_t append_packet(uint8_t buffer[], uint32_t sz, uint32_t timestamp, uint16_t id, void* data, uint8_t dataSize);
+uint32_t append_packet(uint8_t buffer[], uint32_t size, uint32_t timestamp, uint16_t id, void* data, uint8_t dataSize);
 
 #endif /* INC_DLM_UTIL_H_ */

@@ -10,6 +10,7 @@
 #include "cmsis_os2.h"
 #include "dlm-util.h"
 #include "dlm-manage-data-acquisition.h"
+#include "dlm-manage-data-broadcast.h"
 
 // create the buffer for SD card data
 uint8_t storageBuff1[STORAGE_BUFFER_SIZE];
@@ -30,6 +31,8 @@ PPBuff telemetryBuffer = {
 };
 
 void dlm_init(void) {
+	// clear transfer flags initially
+	osThreadFlagsSet(BroadcastDataHandle, FLAG_TRANSFER_DONE);
 }
 
 void dlm_manage_data_acquisition(void) {
@@ -41,15 +44,22 @@ void dlm_manage_data_acquisition(void) {
 	// instead generate some dummy data
 	generate_data(&storageBuffer, &telemetryBuffer);
 
-    osDelay(100);
+    osDelay(DATAGEN_DELAY);
 }
 
 void dlm_manage_data_storage(void) {
 	HAL_GPIO_TogglePin(BLED_GPIO_Port, BLED_Pin);
-    osDelay(1000);
+    osDelay(STORAGE_TRANSFER_DELAY);
 }
 
 void dlm_manage_data_broadcast(void) {
+	// wait for the previous transfer to complete
+	osThreadFlagsWait(FLAG_TRANSFER_DONE, osFlagsWaitAny, 0);
+
     HAL_GPIO_TogglePin(RLED_GPIO_Port, RLED_Pin);
-    osDelay(1000);
+
+    start_telemetry_transfer(&telemetryBuffer);
+
+    // block this thread for a bit
+    osDelay(TELEMETRY_TRANSFER_DELAY);
 }
