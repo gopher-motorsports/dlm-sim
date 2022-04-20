@@ -19,13 +19,13 @@
 // the new buffer size
 uint32_t append_byte(uint8_t buffer[], uint32_t size, uint8_t byte);
 
-// convenience function to append the standard packet structure to a buffer
+// append the standard packet structure to a buffer
 // PARAMETERS:
 // buffer: the byte buffer to append to
 // size: current size of the buffer in bytes
 // timestamp: 4 byte timestamp in ms
 // id: 2 byte data ID
-// data: pointer to the data
+// data: address of the data
 // dataSize: size of the data in bytes
 // RETURNS:
 // the new buffer size
