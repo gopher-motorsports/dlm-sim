@@ -11,6 +11,7 @@
 #include "dlm-util.h"
 #include "dlm-manage-data-acquisition.h"
 #include "dlm-manage-data-broadcast.h"
+#include "dlm-manage-data-storage.h"
 
 // create the buffer for SD card data
 uint8_t storageBuff1[STORAGE_BUFFER_SIZE];
@@ -31,7 +32,7 @@ PPBuff telemetryBuffer = {
 };
 
 void dlm_init(void) {
-	// clear transfer flags initially
+	// clear transfer flag initially
 	osThreadFlagsSet(BroadcastDataHandle, FLAG_TRANSFER_DONE);
 }
 
@@ -49,14 +50,33 @@ void dlm_manage_data_acquisition(void) {
 
 void dlm_manage_data_storage(void) {
 	HAL_GPIO_TogglePin(BLED_GPIO_Port, BLED_Pin);
+
+	static uint8_t sdReady = 0;
+
+	if (!sdReady) {
+		// attempt to initialize the SD card
+		if(sd_init()) {
+			// init failed
+			// try again on the next call
+			return;
+		} else sdReady = 1;
+	}
+
+	if (store_data(&storageBuffer)) {
+		// write failed
+		// close file
+		// unmount
+		sdReady = 0;
+	}
+
     osDelay(STORAGE_TRANSFER_DELAY);
 }
 
 void dlm_manage_data_broadcast(void) {
+    HAL_GPIO_TogglePin(RLED_GPIO_Port, RLED_Pin);
+
 	// wait for the previous transfer to complete
 	osThreadFlagsWait(FLAG_TRANSFER_DONE, osFlagsWaitAny, 0);
-
-    HAL_GPIO_TogglePin(RLED_GPIO_Port, RLED_Pin);
 
     start_telemetry_transfer(&telemetryBuffer);
 
