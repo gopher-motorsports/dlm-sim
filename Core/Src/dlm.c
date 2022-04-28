@@ -8,7 +8,6 @@
 #include "dlm.h"
 #include "main.h"
 #include "cmsis_os2.h"
-#include "dlm-util.h"
 #include "dlm-manage-data-acquisition.h"
 #include "dlm-manage-data-broadcast.h"
 #include "dlm-manage-data-storage.h"
@@ -19,16 +18,16 @@ uint8_t storageBuff2[STORAGE_BUFFER_SIZE];
 PPBuff storageBuffer = {
 		.buffs = {storageBuff1, storageBuff2},
 		.write = 0,
-		.writeSize = 0
+		.fill = 0
 };
 
 // create the buffer for telemetry data
-uint8_t telemetryBuff1[STORAGE_BUFFER_SIZE];
-uint8_t telemetryBuff2[STORAGE_BUFFER_SIZE];
-PPBuff telemetryBuffer = {
-		.buffs = {telemetryBuff1, telemetryBuff2},
+uint8_t broadcastBuff1[BROADCAST_BUFFER_SIZE];
+uint8_t broadcastBuff2[BROADCAST_BUFFER_SIZE];
+PPBuff broadcastBuffer = {
+		.buffs = {broadcastBuff1, broadcastBuff2},
 		.write = 0,
-		.writeSize = 0
+		.fill = 0
 };
 
 void dlm_init(void) {
@@ -43,9 +42,20 @@ void dlm_manage_data_acquisition(void) {
 	// GopherCAN would then make the data available in memory
 
 	// instead generate some dummy data
-	generate_data(&storageBuffer, &telemetryBuffer);
+	static uint32_t packetNum = 0;
+	uint32_t timestamp = packetNum;
+	uint16_t id = 1;
+	uint8_t data = 0x69;
 
-    osDelay(DATAGEN_DELAY);
+	// append the data in packet form
+	osKernelLock(); // TODO: mutex on write side that data transfer tasks must take
+	append_packet(&storageBuffer, STORAGE_BUFFER_SIZE, timestamp, id, &data, sizeof(data));
+	append_packet(&broadcastBuffer, BROADCAST_BUFFER_SIZE, timestamp, id, &data, sizeof(data));
+	osKernelUnlock();
+
+	packetNum++;
+
+    osDelayUntil(osKernelGetTickCount() + THREAD_DELAY_ACQUIRE_DATA);
 }
 
 void dlm_manage_data_storage(void) {
@@ -69,7 +79,7 @@ void dlm_manage_data_storage(void) {
 		sdReady = 0;
 	}
 
-    osDelay(STORAGE_TRANSFER_DELAY);
+    osDelayUntil(osKernelGetTickCount() + THREAD_DELAY_STORE_DATA);
 }
 
 void dlm_manage_data_broadcast(void) {
@@ -78,8 +88,7 @@ void dlm_manage_data_broadcast(void) {
 	// wait for the previous transfer to complete
 	osThreadFlagsWait(FLAG_TRANSFER_DONE, osFlagsWaitAny, 0);
 
-    start_telemetry_transfer(&telemetryBuffer);
+    start_broadcast(&broadcastBuffer);
 
-    // block this thread for a bit
-    osDelay(TELEMETRY_TRANSFER_DELAY);
+    osDelayUntil(osKernelGetTickCount() + THREAD_DELAY_BROADCAST_DATA);
 }

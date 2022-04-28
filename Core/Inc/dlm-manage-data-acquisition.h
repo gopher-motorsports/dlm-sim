@@ -8,12 +8,23 @@
 #ifndef INC_DLM_MANAGE_DATA_ACQUISITION_H_
 #define INC_DLM_MANAGE_DATA_ACQUISITION_H_
 
+#include <stdint.h>
 #include "dlm.h"
 
-// create some dummy data and write it to the buffers
+// append the standard packet structure to a buffer
 // PARAMETERS:
-// storageBuffer: address of ping-pong buffer struct for data storage
-// telemetryBuffer: address of buffer for telemetry
-void generate_data(PPBuff* storageBuffer, PPBuff* telemetryBuffer);
+// buffer: the ping-pong buffer to append to
+// bufferSize: buffer size (in bytes) to check overflow
+// timestamp: 4 byte timestamp in ms
+// id: 2 byte data ID
+// data: address of the data
+// dataSize: size of the data in bytes
+void append_packet(PPBuff* buffer, uint32_t bufferSize, uint32_t timestamp, uint16_t id, void* data, uint8_t dataSize);
+
+// escapes a byte if necessary then appends it to the provided buffer
+// PARAMETERS:
+// buffer: the ping-pong buffer to append to
+// byte: byte to append
+void append_byte(PPBuff* buffer, uint8_t byte);
 
 #endif /* INC_DLM_MANAGE_DATA_ACQUISITION_H_ */

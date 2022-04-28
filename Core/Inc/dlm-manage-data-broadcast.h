@@ -13,6 +13,6 @@
 // start the UART DMA transfer
 // PARAMETERS:
 // buffer: telemetry ping-pong buffer
-void start_telemetry_transfer(PPBuff* buffer);
+void start_broadcast(PPBuff* buffer);
 
 #endif /* INC_DLM_MANAGE_DATA_BROADCAST_H_ */

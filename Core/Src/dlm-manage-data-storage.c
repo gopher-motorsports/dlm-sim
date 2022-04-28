@@ -17,9 +17,9 @@ uint8_t sd_init(void) {
 
 uint8_t store_data(PPBuff* buffer) {
 	// ping-pong the buffer
-	uint32_t transferSize = buffer->writeSize;
-	buffer->writeSize = 0;
-	buffer->write = !buffer->write;
+//	uint32_t transferSize = buffer->writeSize;
+//	buffer->writeSize = 0;
+//	buffer->write = !buffer->write;
 
 	// write data
 

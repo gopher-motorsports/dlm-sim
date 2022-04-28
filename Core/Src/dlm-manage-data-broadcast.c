@@ -9,10 +9,10 @@
 #include "stm32f7xx_hal.h"
 #include "main.h"
 
-void start_telemetry_transfer(PPBuff* buffer) {
+void start_broadcast(PPBuff* buffer) {
 	// ping-pong the buffer
-	uint32_t transferSize = buffer->writeSize;
-	buffer->writeSize = 0;
+	uint32_t transferSize = buffer->fill;
+	buffer->fill = 0;
 	buffer->write = !buffer->write;
 
 	// start transfer

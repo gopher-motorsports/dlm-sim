@@ -17,26 +17,24 @@
 
 // size in bytes for half of the ping-pong buffer
 #define STORAGE_BUFFER_SIZE 128
-#define TELEMETRY_BUFFER_SIZE 128
+#define BROADCAST_BUFFER_SIZE 128
 
-// minimum time between transfers in ms
-#define STORAGE_TRANSFER_DELAY 1000
-#define TELEMETRY_TRANSFER_DELAY 1000
-
-// time between packet generation in ms
-#define DATAGEN_DELAY 100
+// thread periods/delays in RTOS ticks (also in ms for a 1ms tick)
+#define THREAD_DELAY_STORE_DATA 1000
+#define THREAD_DELAY_BROADCAST_DATA 1000
+#define THREAD_DELAY_ACQUIRE_DATA 100
 
 // thread flag to indicate that a previous transfer is complete
 #define FLAG_TRANSFER_DONE 0x00000001U
 
-// ping-pong buffer to enable higher data throughput
+// ping-pong buffer struct
 typedef struct PPBuff {
 	uint8_t* buffs[2]; // pointers to 2 byte buffers
 	uint8_t write; // index of the write buffer (0 or 1)
-	uint32_t writeSize; // # of bytes written
+	uint32_t fill; // fill level of the write buffer (in bytes)
 } PPBuff;
 
-// any necessary global initialization
+// global initialization
 void dlm_init(void);
 
 // high level function for the data acquisition task
