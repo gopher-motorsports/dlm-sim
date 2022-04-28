@@ -5,48 +5,90 @@
  *      Author: jonathan
  */
 
+#include "dlm.h"
 #include "main.h"
 #include "cmsis_os2.h"
+#include "dlm-manage-data-acquisition.h"
+#include "dlm-manage-data-broadcast.h"
+#include "dlm-manage-data-storage.h"
 
-#include "dlm.h"
-#include "dlm-generate-data.h"
-#include "dlm-transmit-data.h"
-#include "dlm-save-data.h"
+// create the buffer for SD card data
+uint8_t storageBuff1[STORAGE_BUFFER_SIZE];
+uint8_t storageBuff2[STORAGE_BUFFER_SIZE];
+PPBuff storageBuffer = {
+		.buffs = {storageBuff1, storageBuff2},
+		.write = 0,
+		.fill = 0
+};
 
-// dlm.c contains the high level duties of the data logging module
-// the functions here are called by RTOS task handlers and their implementation is abstracted to similarly-named files
+// create the buffer for telemetry data
+uint8_t broadcastBuff1[BROADCAST_BUFFER_SIZE];
+uint8_t broadcastBuff2[BROADCAST_BUFFER_SIZE];
+PPBuff broadcastBuffer = {
+		.buffs = {broadcastBuff1, broadcastBuff2},
+		.write = 0,
+		.fill = 0
+};
 
-// data nodes are held in a linked list buffer
-// most recent node is closest to head
-DATA_NODE bufferHead = {0, 0, UNKNOWN, NULL, NULL};
-
-// for simulation purposes, generate random data nodes and append them to the buffer
-void dlm_generate_data(void) {
-    HAL_GPIO_TogglePin(BLED_GPIO_Port, BLED_Pin);
-
-    generate_node(&bufferHead);
-
-    // this task should run every 100ms
-    osDelay(100);
+void dlm_init(void) {
+	// clear transfer flag initially
+	osThreadFlagsSet(BroadcastDataHandle, FLAG_TRANSFER_DONE);
 }
 
-// step through the buffer, packetize data nodes, and send them to an Xbee
-void dlm_transmit_data(void) {
-    HAL_GPIO_TogglePin(GLED_GPIO_Port, GLED_Pin);
+void dlm_manage_data_acquisition(void) {
+	HAL_GPIO_TogglePin(GLED_GPIO_Port, GLED_Pin);
 
-    transmit_nodes(&bufferHead);
+	// in a real DLM this is where we would service the CAN hardware and request data buckets
+	// GopherCAN would then make the data available in memory
 
-    // this task should run every 500ms
-    osDelay(500);
+	// instead generate some dummy data
+	static uint32_t packetNum = 0;
+	uint32_t timestamp = packetNum;
+	uint16_t id = 1;
+	uint8_t data = 0x69;
+
+	// append the data in packet form
+	osKernelLock(); // TODO: mutex on write side that data transfer tasks must take
+	append_packet(&storageBuffer, STORAGE_BUFFER_SIZE, timestamp, id, &data, sizeof(data));
+	append_packet(&broadcastBuffer, BROADCAST_BUFFER_SIZE, timestamp, id, &data, sizeof(data));
+	osKernelUnlock();
+
+	packetNum++;
+
+    osDelayUntil(osKernelGetTickCount() + THREAD_DELAY_ACQUIRE_DATA);
 }
 
-// this is where we would write the buffer data to storage
-// in the simulation, we just clear the buffer
-void dlm_save_data(void) {
+void dlm_manage_data_storage(void) {
+	HAL_GPIO_TogglePin(BLED_GPIO_Port, BLED_Pin);
+
+	static uint8_t sdReady = 0;
+
+	if (!sdReady) {
+		// attempt to initialize the SD card
+		if(sd_init()) {
+			// init failed
+			// try again on the next call
+			return;
+		} else sdReady = 1;
+	}
+
+	if (store_data(&storageBuffer)) {
+		// write failed
+		// close file
+		// unmount
+		sdReady = 0;
+	}
+
+    osDelayUntil(osKernelGetTickCount() + THREAD_DELAY_STORE_DATA);
+}
+
+void dlm_manage_data_broadcast(void) {
     HAL_GPIO_TogglePin(RLED_GPIO_Port, RLED_Pin);
 
-    save_nodes(&bufferHead);
+	// wait for the previous transfer to complete
+	osThreadFlagsWait(FLAG_TRANSFER_DONE, osFlagsWaitAny, 0);
 
-    // this task should run every 2s
-    osDelay(2000);
+    start_broadcast(&broadcastBuffer);
+
+    osDelayUntil(osKernelGetTickCount() + THREAD_DELAY_BROADCAST_DATA);
 }
