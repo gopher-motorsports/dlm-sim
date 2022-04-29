@@ -46,6 +46,8 @@ extern UART_HandleTypeDef huart2;
 extern osThreadId_t AcquireDataHandle;
 extern osThreadId_t StoreDataHandle;
 extern osThreadId_t BroadcastDataHandle;
+extern osMutexId_t mutex_broadcast_bufferHandle;
+extern osMutexId_t mutex_storage_bufferHandle;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

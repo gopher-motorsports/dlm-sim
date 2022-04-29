@@ -48,10 +48,13 @@ void dlm_manage_data_acquisition(void) {
 	uint8_t data = 0x69;
 
 	// append the data in packet form
-	osKernelLock(); // TODO: mutex on write side that data transfer tasks must take
+	osMutexAcquire(mutex_storage_bufferHandle, osWaitForever);
 	append_packet(&storageBuffer, STORAGE_BUFFER_SIZE, timestamp, id, &data, sizeof(data));
+	osMutexRelease(mutex_storage_bufferHandle);
+
+	osMutexAcquire(mutex_broadcast_bufferHandle, osWaitForever);
 	append_packet(&broadcastBuffer, BROADCAST_BUFFER_SIZE, timestamp, id, &data, sizeof(data));
-	osKernelUnlock();
+	osMutexRelease(mutex_broadcast_bufferHandle);
 
 	packetNum++;
 

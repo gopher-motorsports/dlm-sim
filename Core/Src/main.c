@@ -66,6 +66,16 @@ const osThreadAttr_t BroadcastData_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityAboveNormal,
 };
+/* Definitions for mutex_broadcast_buffer */
+osMutexId_t mutex_broadcast_bufferHandle;
+const osMutexAttr_t mutex_broadcast_buffer_attributes = {
+  .name = "mutex_broadcast_buffer"
+};
+/* Definitions for mutex_storage_buffer */
+osMutexId_t mutex_storage_bufferHandle;
+const osMutexAttr_t mutex_storage_buffer_attributes = {
+  .name = "mutex_storage_buffer"
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -124,6 +134,12 @@ int main(void)
 
   /* Init scheduler */
   osKernelInitialize();
+  /* Create the mutex(es) */
+  /* creation of mutex_broadcast_buffer */
+  mutex_broadcast_bufferHandle = osMutexNew(&mutex_broadcast_buffer_attributes);
+
+  /* creation of mutex_storage_buffer */
+  mutex_storage_bufferHandle = osMutexNew(&mutex_storage_buffer_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
