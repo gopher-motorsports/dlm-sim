@@ -55,7 +55,7 @@ void dlm_manage_data_acquisition(void) {
 
 	packetNum++;
 
-    osDelayUntil(osKernelGetTickCount() + THREAD_DELAY_ACQUIRE_DATA);
+    osDelay(THREAD_DELAY_ACQUIRE_DATA);
 }
 
 void dlm_manage_data_storage(void) {
@@ -79,7 +79,7 @@ void dlm_manage_data_storage(void) {
 		sdReady = 0;
 	}
 
-    osDelayUntil(osKernelGetTickCount() + THREAD_DELAY_STORE_DATA);
+    osDelay(THREAD_DELAY_STORE_DATA);
 }
 
 void dlm_manage_data_broadcast(void) {
@@ -90,5 +90,5 @@ void dlm_manage_data_broadcast(void) {
 
     start_broadcast(&broadcastBuffer);
 
-    osDelayUntil(osKernelGetTickCount() + THREAD_DELAY_BROADCAST_DATA);
+    osDelay(THREAD_DELAY_BROADCAST_DATA);
 }
