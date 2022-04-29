@@ -8,6 +8,7 @@
 #include "dlm.h"
 #include "main.h"
 #include "cmsis_os2.h"
+#include "fatfs.h"
 #include "dlm-manage-data-acquisition.h"
 #include "dlm-manage-data-broadcast.h"
 #include "dlm-manage-data-storage.h"
@@ -65,20 +66,23 @@ void dlm_manage_data_storage(void) {
 	HAL_GPIO_TogglePin(BLED_GPIO_Port, BLED_Pin);
 
 	static uint8_t sdReady = 0;
+	uint8_t err = 0;
 
 	if (!sdReady) {
 		// attempt to initialize the SD card
-		if(sd_init()) {
+		err = sd_init();
+		if(err) {
 			// init failed
+			sd_deinit();
 			// try again on the next call
 			return;
 		} else sdReady = 1;
 	}
 
-	if (store_data(&storageBuffer)) {
+	err = store_data(&storageBuffer);
+	if (err) {
 		// write failed
-		// close file
-		// unmount
+		sd_deinit();
 		sdReady = 0;
 	}
 

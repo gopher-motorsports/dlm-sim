@@ -56,6 +56,9 @@ void DebugMon_Handler(void);
 void DMA1_Stream6_IRQHandler(void);
 void TIM1_BRK_TIM9_IRQHandler(void);
 void USART2_IRQHandler(void);
+void SDMMC1_IRQHandler(void);
+void DMA2_Stream3_IRQHandler(void);
+void DMA2_Stream6_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

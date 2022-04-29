@@ -16,6 +16,9 @@
 // 0 if successful, else 1
 uint8_t sd_init(void);
 
+// unmount and close the file in case of an error
+void sd_deinit(void);
+
 // attempt to write data to an open file
 // PARAMETERS:
 // buffer: storage ping-pong buffer
