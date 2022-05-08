@@ -43,10 +43,10 @@ void dlm_manage_data_acquisition(void) {
 	// GopherCAN would then make the data available in memory
 
 	// instead generate some dummy data
-	static uint32_t packetNum = 0;
-	uint32_t timestamp = packetNum;
-	uint16_t id = 1;
-	uint8_t data = 0x69;
+	static uint16_t packetNum = 0;
+	uint32_t timestamp = osKernelGetTickCount();
+	uint16_t id = packetNum;
+	uint32_t data = timestamp;
 
 	// append the data in packet form
 	osMutexAcquire(mutex_storage_bufferHandle, osWaitForever);
@@ -71,19 +71,17 @@ void dlm_manage_data_storage(void) {
 	if (!sdReady) {
 		// attempt to initialize the SD card
 		err = sd_init();
-		if(err) {
-			// init failed
-			sd_deinit();
-			// try again on the next call
-			return;
-		} else sdReady = 1;
+		if (err) sd_deinit();
+		else sdReady = 1;
 	}
 
-	err = store_data(&storageBuffer);
-	if (err) {
-		// write failed
-		sd_deinit();
-		sdReady = 0;
+	if (sdReady) {
+		err = store_data(&storageBuffer);
+		if (err) {
+			// write failed
+			sd_deinit();
+			sdReady = 0;
+		}
 	}
 
     osDelay(THREAD_DELAY_STORE_DATA);

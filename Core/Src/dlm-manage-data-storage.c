@@ -12,12 +12,15 @@
 uint8_t sd_init(void) {
 	FRESULT res;
 
+	// check if the sd card is inserted (0 if inserted)
+	if (HAL_GPIO_ReadPin(SDMMC_CD_GPIO_Port, SDMMC_CD_Pin)) return 1;
+
 	// mount
 	res = f_mount(&SDFatFS, SDPath, 1);
 	if (res != FR_OK) return 1;
 
 	// open a file
-	res = f_open(&SDFile, "data.txt", FA_CREATE_ALWAYS | FA_WRITE);
+	res = f_open(&SDFile, "data.dat", FA_CREATE_ALWAYS | FA_WRITE);
 	if (res != FR_OK) return 1;
 
 	return 0;
