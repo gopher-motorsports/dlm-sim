@@ -19,7 +19,7 @@ void start_broadcast(PPBuff* buffer) {
 	osMutexRelease(mutex_broadcast_bufferHandle);
 
 	// start transfer
-	HAL_UART_Transmit_DMA(&huart2, buffer->buffs[!buffer->write], transferSize);
+	HAL_UART_Transmit_DMA(&huart7, buffer->buffs[!buffer->write], transferSize);
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart) {
