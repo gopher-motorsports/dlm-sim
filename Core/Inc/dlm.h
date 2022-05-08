@@ -16,13 +16,13 @@
 #define ESCAPE_BYTE 0x7d
 
 // size in bytes for half of the ping-pong buffer
-#define STORAGE_BUFFER_SIZE 128
-#define BROADCAST_BUFFER_SIZE 128
+#define STORAGE_BUFFER_SIZE 1500
+#define BROADCAST_BUFFER_SIZE 1500
 
 // thread periods/delays in RTOS ticks (also in ms for a 1ms tick)
 #define THREAD_DELAY_STORE_DATA 1000
 #define THREAD_DELAY_BROADCAST_DATA 1000
-#define THREAD_DELAY_ACQUIRE_DATA 100
+#define THREAD_DELAY_ACQUIRE_DATA 10
 
 // thread flag to indicate that a previous transfer is complete
 #define FLAG_TRANSFER_DONE 0x00000001U
