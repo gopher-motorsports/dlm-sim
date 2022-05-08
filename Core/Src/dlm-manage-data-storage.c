@@ -27,8 +27,8 @@ uint8_t sd_init(void) {
 }
 
 void sd_deinit(void) {
-	f_mount(NULL, SDPath, 0);
 	f_close(&SDFile);
+	f_mount(NULL, SDPath, 0);
 }
 
 uint8_t store_data(PPBuff* buffer) {
