@@ -17,6 +17,8 @@
 uint8_t storageBuff1[STORAGE_BUFFER_SIZE];
 uint8_t storageBuff2[STORAGE_BUFFER_SIZE];
 PPBuff storageBuffer = {
+		.size = STORAGE_BUFFER_SIZE,
+		.mutex = NULL,
 		.buffs = {storageBuff1, storageBuff2},
 		.write = 0,
 		.fill = 0
@@ -26,12 +28,18 @@ PPBuff storageBuffer = {
 uint8_t broadcastBuff1[BROADCAST_BUFFER_SIZE];
 uint8_t broadcastBuff2[BROADCAST_BUFFER_SIZE];
 PPBuff broadcastBuffer = {
+		.size = BROADCAST_BUFFER_SIZE,
+		.mutex = NULL,
 		.buffs = {broadcastBuff1, broadcastBuff2},
 		.write = 0,
 		.fill = 0
 };
 
 void dlm_init(void) {
+	// assign mutexes
+	storageBuffer.mutex = mutex_storage_bufferHandle;
+	broadcastBuffer.mutex = mutex_broadcast_bufferHandle;
+
 	// clear transfer flag initially
 	osThreadFlagsSet(BroadcastDataHandle, FLAG_TRANSFER_DONE);
 }
@@ -43,21 +51,7 @@ void dlm_manage_data_acquisition(void) {
 	// GopherCAN would then make the data available in memory
 
 	// instead generate some dummy data
-	static uint16_t packetNum = 0;
-	uint32_t timestamp = osKernelGetTickCount();
-	uint16_t id = packetNum;
-	uint32_t data = timestamp;
-
-	// append the data in packet form
-	osMutexAcquire(mutex_storage_bufferHandle, osWaitForever);
-	append_packet(&storageBuffer, STORAGE_BUFFER_SIZE, timestamp, id, &data, sizeof(data));
-	osMutexRelease(mutex_storage_bufferHandle);
-
-	osMutexAcquire(mutex_broadcast_bufferHandle, osWaitForever);
-	append_packet(&broadcastBuffer, BROADCAST_BUFFER_SIZE, timestamp, id, &data, sizeof(data));
-	osMutexRelease(mutex_broadcast_bufferHandle);
-
-	packetNum++;
+	generate_data(&storageBuffer, &broadcastBuffer);
 
     osDelay(THREAD_DELAY_ACQUIRE_DATA);
 }

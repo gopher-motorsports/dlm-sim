@@ -9,6 +9,7 @@
 #define INC_DLM_H_
 
 #include <stdint.h>
+#include "cmsis_os2.h"
 
 // byte to indicate the start of a packet
 #define START_BYTE 0x7e
@@ -16,19 +17,21 @@
 #define ESCAPE_BYTE 0x7d
 
 // size in bytes for half of the ping-pong buffer
-#define STORAGE_BUFFER_SIZE 1500
-#define BROADCAST_BUFFER_SIZE 1500
+#define STORAGE_BUFFER_SIZE 10000
+#define BROADCAST_BUFFER_SIZE 10000
 
 // thread periods/delays in RTOS ticks (also in ms for a 1ms tick)
-#define THREAD_DELAY_STORE_DATA 1000
-#define THREAD_DELAY_BROADCAST_DATA 1000
-#define THREAD_DELAY_ACQUIRE_DATA 10
+#define THREAD_DELAY_STORE_DATA 500
+#define THREAD_DELAY_BROADCAST_DATA 500
+#define THREAD_DELAY_ACQUIRE_DATA 1
 
 // thread flag to indicate that a previous transfer is complete
 #define FLAG_TRANSFER_DONE 0x00000001U
 
 // ping-pong buffer struct
 typedef struct PPBuff {
+	uint32_t size; // max size of the bufffer
+	osMutexId_t mutex; // buffer access mutex
 	uint8_t* buffs[2]; // pointers to 2 byte buffers
 	uint8_t write; // index of the write buffer (0 or 1)
 	uint32_t fill; // fill level of the write buffer (in bytes)

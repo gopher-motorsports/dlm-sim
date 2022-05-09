@@ -8,6 +8,7 @@
 #include "dlm-manage-data-storage.h"
 #include "fatfs.h"
 #include "main.h"
+#include "dlm-buffer.h"
 
 uint8_t sd_init(void) {
 	FRESULT res;
@@ -34,14 +35,8 @@ void sd_deinit(void) {
 uint8_t store_data(PPBuff* buffer) {
 	FRESULT res;
 
-	osMutexAcquire(mutex_storage_bufferHandle, osWaitForever);
-	// ping-pong the buffer
-	uint32_t transferSize = buffer->fill;
-	buffer->fill = 0;
-	buffer->write = !buffer->write;
-	osMutexRelease(mutex_storage_bufferHandle);
-
 	// write data
+	uint32_t transferSize = swap_buffer(buffer);
 	res = f_write(&SDFile, buffer->buffs[!buffer->write], transferSize, NULL);
 	if (res != FR_OK) return 1;
 
