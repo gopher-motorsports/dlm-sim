@@ -15,10 +15,12 @@
 #define START_BYTE 0x7e
 // byte to indicate that the next byte has been escaped
 #define ESCAPE_BYTE 0x7d
+// uniform packet size allowing space for every byte (other than start) to be escaped (must be a multiple of 8)
+#define PACKET_SIZE 32
 
 // size in bytes for half of the ping-pong buffer
-#define STORAGE_BUFFER_SIZE 10000
-#define BROADCAST_BUFFER_SIZE 10000
+#define STORAGE_BUFFER_SIZE 32000
+#define BROADCAST_BUFFER_SIZE 32000
 
 // thread periods/delays in RTOS ticks (also in ms for a 1ms tick)
 #define THREAD_DELAY_STORE_DATA 500

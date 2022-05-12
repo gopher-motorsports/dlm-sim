@@ -13,7 +13,7 @@ void generate_data(PPBuff* storageBuffer, PPBuff* broadcastBuffer) {
 
 	uint32_t timestamp = osKernelGetTickCount();
 	uint16_t id = packetNum;
-	uint32_t data = storageBuffer->fill;
+	uint32_t data = 0x12345678;
 
 	// append the data in packet form
 	append_packet(storageBuffer, timestamp, id, &data, sizeof(data));
