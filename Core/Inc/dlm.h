@@ -15,8 +15,8 @@
 #define START_BYTE 0x7e
 // byte to indicate that the next byte has been escaped
 #define ESCAPE_BYTE 0x7d
-// uniform packet size allowing space for every byte (other than start) to be escaped (must be a multiple of 8)
-#define PACKET_SIZE 32
+// max packet size including start byte and 14 escaped bytes, stretched to a multiple of 8
+#define MAX_PACKET_SIZE 32
 
 // size in bytes for half of the ping-pong buffer
 #define STORAGE_BUFFER_SIZE 32000
