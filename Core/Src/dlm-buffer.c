@@ -34,8 +34,10 @@ void append_packet(PPBuff* buffer, uint32_t timestamp, uint16_t id, void* data, 
 	packetFill = append_value(packet, packetFill, &id, sizeof(id));
 	packetFill = append_value(packet, packetFill, data, dataSize);
 
-	// math trick to get the minimum packet size that's a multiple of 8
-	uint8_t packetSize = ((packetFill - 1) | 7) + 1;
+	// minimize packet size
+	uint8_t packetSize = MAX_PACKET_SIZE;
+	if (packetFill <= 16) packetSize = 16;
+	else if (packetFill <= 24) packetSize = 24;
 
 	osMutexAcquire(buffer->mutex, osWaitForever);
 	memcpy(&buffer->buffs[buffer->write][buffer->fill], packet, packetSize);
